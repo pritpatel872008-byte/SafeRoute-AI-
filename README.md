@@ -19,7 +19,7 @@ Safety-first navigation web app with a Go API, PostgreSQL persistence, provider-
 - Configure a MapTiler API key to use real tiles, geocoding and directions. A truck-specific profile is deliberately rejected instead of returning a car route labelled as truck-safe.
 - Map data may omit temporary closures, access rules, height/weight restrictions and other vehicle-specific limitations. This is not a validated emergency dispatch/navigation service.
 - SOS delivery to SMS/voice contacts is **not configured**. A database event is not an emergency notification. No paid messaging provider is activated by this repository.
-- Password reset email delivery is not included until a verified sending provider and its credentials are configured.
+- Password reset uses one-time, hashed, 30-minute tokens and revokes existing sessions. Email delivery requires a verified Resend sender plus `RESEND_API_KEY`, `MAIL_FROM`, and `PASSWORD_RESET_URL`; without these settings, the API returns an explicit configuration error instead of claiming an email was sent.
 - The frontend uses browser session storage for the session token. For a high-assurance production deployment, move sessions to Secure, HttpOnly, SameSite cookies and add CSRF protection.
 - No secrets belong in Git or in client code. Restrict the public MapTiler key by allowed website origins and API scopes.
 
@@ -30,7 +30,7 @@ Safety-first navigation web app with a Go API, PostgreSQL persistence, provider-
 Required for persisted functionality:
 - `DATABASE_URL`: PostgreSQL connection string.
 - `CORS_ORIGINS`: comma-separated exact frontend origins, e.g. `http://localhost:5173,https://your-web-project.vercel.app`.
-- `MAPTILER_API_KEY`: server-side MapTiler key for geocoding and directions.
+- `MAPTILER_API_KEY`: server-side MapTiler key for geocoding and directions.\n- `RESEND_API_KEY`, `MAIL_FROM`, `PASSWORD_RESET_URL`: optional password-reset email delivery settings. Use a verified sender and your actual frontend origin.
 - `PORT`: provided by Render; local default is `8080`.
 
 The API automatically applies the embedded migrations at startup. A valid PostgreSQL service must be available first. The Render blueprint marks credentials as unsynced secrets; enter them in Render's environment settings yourself. Do not deploy until the database plan and cost are explicitly acceptable to you.
