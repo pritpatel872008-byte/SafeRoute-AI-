@@ -159,3 +159,43 @@ func (s *server) deleteContact(w http.ResponseWriter,r *http.Request) {
 }
 
 var _ = pgx.ErrNoRows
+
+type sosInput struct {
+	Latitude float64 `json:"latitude"`
+	Longitude float64 `json:"longitude"`
+	Note string `json:"note"`
+}
+
+func (s *server) createSOS(w http.ResponseWriter,r *http.Request) {
+	userID := r.Context().Value(userIDKey).(string)
+	var input sosInput
+	if err:=json.NewDecoder(http.MaxBytesReader(w,r.Body,8<<10)).Decode(&input); err!=nil {
+		writeJSON(w,http.StatusBadRequest,map[string]string{"error":"invalid_json"}); return
+	}
+	if input.Latitude < -90 || input.Latitude > 90 || input.Longitude < -180 || input.Longitude > 180 {
+		writeJSON(w,http.StatusBadRequest,map[string]string{"error":"valid_gps_coordinates_required"}); return
+	}
+	if len(input.Note)>500 { writeJSON(w,http.StatusBadRequest,map[string]string{"error":"note_too_long"}); return }
+	var id string
+	err:=s.db.QueryRow(r.Context(),`INSERT INTO sos_events(user_id,latitude,longitude,note,state) VALUES($1,$2,$3,$4,'created') RETURNING id`,userID,input.Latitude,input.Longitude,strings.TrimSpace(input.Note)).Scan(&id)
+	if err!=nil { writeJSON(w,http.StatusInternalServerError,map[string]string{"error":"sos_event_create_failed"}); return }
+	_,_ = s.db.Exec(r.Context(),`INSERT INTO audit_events(user_id,action,resource_type,resource_id,metadata) VALUES($1,'sos_event_created','sos_event',$2,jsonb_build_object('delivery','not_configured'))`,userID,id)
+	writeJSON(w,http.StatusCreated,map[string]any{"event":map[string]any{"id":id,"latitude":input.Latitude,"longitude":input.Longitude,"state":"created","delivery":"not_configured"}})
+}
+
+func (s *server) listSOS(w http.ResponseWriter,r *http.Request) {
+	userID := r.Context().Value(userIDKey).(string)
+	rows,err:=s.db.Query(r.Context(),`SELECT id,latitude,longitude,note,state,created_at FROM sos_events WHERE user_id=$1 ORDER BY created_at DESC LIMIT 100`,userID)
+	if err!=nil { writeJSON(w,http.StatusInternalServerError,map[string]string{"error":"sos_events_query_failed"}); return }
+	defer rows.Close()
+	events:=make([]map[string]any,0)
+	for rows.Next() {
+		var id,note,state string
+		var lat,lon float64
+		var created time.Time
+		if err:=rows.Scan(&id,&lat,&lon,&note,&state,&created); err!=nil { writeJSON(w,http.StatusInternalServerError,map[string]string{"error":"sos_events_read_failed"}); return }
+		events=append(events,map[string]any{"id":id,"latitude":lat,"longitude":lon,"note":note,"state":state,"created_at":created})
+	}
+	if rows.Err()!=nil { writeJSON(w,http.StatusInternalServerError,map[string]string{"error":"sos_events_read_failed"}); return }
+	writeJSON(w,http.StatusOK,map[string]any{"events":events,"delivery_configured":false})
+}
