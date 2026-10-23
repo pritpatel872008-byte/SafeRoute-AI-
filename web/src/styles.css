@@ -370,3 +370,28 @@ footer{margin:0 28px;border-color:#dadce0}footer p,footer>span{color:#5f6368}
  .workspace#account,.safety-section,.system-section{padding-left:12px;padding-right:12px}
  footer{margin:0 12px}
 }
+
+
+/* Full-viewport map and keep map actions above tiles and overlays */
+html,body,#root{min-height:100%;height:100%;margin:0}
+body{overflow-x:hidden}
+.app-shell{min-height:100vh}
+.workspace#navigate{padding:0!important}
+.workspace#navigate>.section-heading{z-index:1100}
+.planner-grid{min-height:calc(100dvh - 64px)!important}
+.map-panel{height:calc(100dvh - 64px)!important;min-height:0!important;border-radius:0!important;border-left:0;border-right:0;border-bottom:0}
+.map-placeholder,.real-map,.leaflet-container{height:100%!important;min-height:100%!important}
+.leaflet-pane{z-index:400}
+.leaflet-top,.leaflet-bottom,.leaflet-control{z-index:1000!important}
+.route-panel{z-index:1200!important}
+.map-topline,.map-floating-label,.map-footer{z-index:1100!important}
+.map-locate-button{z-index:1300!important;position:absolute}
+.suggestions{z-index:1400!important;position:relative}
+.location-input,.primary-button,.secondary-button,.field-action,.vehicle-option{position:relative;z-index:1250}
+@media(max-width:760px){
+ .topbar{z-index:1500}
+ .planner-grid{min-height:calc(100dvh - 56px)!important}
+ .map-panel{height:calc(100dvh - 56px)!important;min-height:0!important}
+ .route-panel{z-index:1200!important;max-height:54dvh}
+ .map-locate-button{z-index:1300!important}
+}
