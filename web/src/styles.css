@@ -395,3 +395,32 @@ body{overflow-x:hidden}
  .route-panel{z-index:1200!important;max-height:54dvh}
  .map-locate-button{z-index:1300!important}
 }
+
+
+/* Map-first light interface; keep existing account, SOS and history sections intact */
+.hero{display:none!important}
+.workspace#navigate{padding:0!important;margin:0!important}
+.workspace#navigate>.section-heading{display:none!important}
+.planner-grid{display:block!important;position:relative!important;min-height:calc(100dvh - 76px)!important}
+.map-panel{position:relative!important;width:100%!important;height:calc(100dvh - 76px)!important;min-height:540px!important;border-radius:0!important;margin:0!important;padding:0!important;overflow:hidden}
+.map-topline{position:absolute!important;top:14px!important;right:14px!important;z-index:1100!important;background:#fff!important;border:1px solid #dadce0!important;border-radius:12px!important;padding:10px 13px!important;box-shadow:0 2px 8px #20212420!important}
+.route-panel{position:absolute!important;top:14px!important;left:14px!important;width:min(370px,calc(100% - 28px))!important;max-height:calc(100dvh - 110px)!important;overflow-y:auto!important;z-index:1200!important;background:#fff!important;border:1px solid #dadce0!important;box-shadow:0 4px 18px #20212426!important;border-radius:14px!important}
+.map-placeholder.real-map{height:100%!important;min-height:100%!important;border-radius:0!important}
+.navigation-controls{display:flex;flex-direction:column;gap:9px;margin:12px 0;padding:12px;border:1px solid #dadce0;border-radius:12px;background:#f8fafd}
+.navigation-live{display:flex;align-items:center;gap:8px;color:#202124;font-weight:600;font-size:13px}
+.navigation-live small{display:block;color:#5f6368;font-weight:400;margin-left:auto}
+.navigation-controls .primary-button{width:100%;justify-content:center}
+.voice-toggle{display:flex;align-items:center;gap:8px;color:#3c4043;font-size:13px}
+.voice-toggle input{accent-color:#1a73e8;width:16px;height:16px}
+.map-locate-button{z-index:1300!important}
+.leaflet-top,.leaflet-bottom,.leaflet-control{z-index:1000!important}
+@media(max-width:760px){
+ .topbar{position:relative;z-index:1500}
+ .planner-grid{min-height:calc(100dvh - 64px)!important}
+ .map-panel{height:calc(100dvh - 64px)!important;min-height:480px!important}
+ .route-panel{top:10px!important;left:10px!important;width:min(350px,calc(100% - 20px))!important;max-height:58dvh!important;padding:13px!important}
+ .map-topline{top:auto!important;bottom:54px!important;right:10px!important;padding:7px 9px!important}
+ .map-topline h3{font-size:14px!important}
+ .navigation-controls{padding:9px;margin:10px 0}
+ .map-footer{z-index:1100!important}
+}
