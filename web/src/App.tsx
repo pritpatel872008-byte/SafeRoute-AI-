@@ -11,6 +11,7 @@ type Contact = { id: string; name: string; phone_e164: string; relationship: str
 type SavedPlace = { id: string; label: string; latitude: number; longitude: number };
 type RouteHistory = { id: string; origin: PlaceOption; destination: PlaceOption; vehicle: Vehicle; route_summary: { distance_m?: number; duration_s?: number }; created_at: string };
 type SOSEvent = { id: string; latitude: number; longitude: number; note: string; state: string; created_at: string };
+type SafetyReport = { id:string; title:string; description:string; category:string; latitude:number; longitude:number; source_url?:string|null; source_name:string; status:string; created_at:string };
 const API = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 const MAP_KEY = import.meta.env.VITE_MAPTILER_KEY || '';
 const tokenKey = 'saferoute.session';
@@ -58,6 +59,14 @@ export default function App() {
   const [savedPlaces, setSavedPlaces] = useState<SavedPlace[]>([]);
   const [history, setHistory] = useState<RouteHistory[]>([]);
   const [sosEvents, setSosEvents] = useState<SOSEvent[]>([]);
+  const [safetyReports, setSafetyReports] = useState<SafetyReport[]>([]);
+  const [pendingReports, setPendingReports] = useState<SafetyReport[]>([]);
+  const [reportTitle, setReportTitle] = useState('');
+  const [reportDescription, setReportDescription] = useState('');
+  const [reportCategory, setReportCategory] = useState('hazard');
+  const [reportLat, setReportLat] = useState('');
+  const [reportLon, setReportLon] = useState('');
+  const [reportNotice, setReportNotice] = useState('');
   const [sosStage, setSosStage] = useState<'idle' | 'confirm' | 'ready' | 'sending'>('idle');
   const [sosNote, setSosNote] = useState('');
   const [sosMessage, setSosMessage] = useState('');
@@ -268,7 +277,40 @@ export default function App() {
     }, error => { setSosMessage(error.code === error.PERMISSION_DENIED ? 'Location permission denied. No SOS event was created.' : 'Could not obtain GPS. No SOS event was created.'); setSosStage('idle'); }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 });
   }
 
-  const database = apiStatus?.database ?? (apiError ? 'unavailable' : 'checking');
+
+  async function submitSafetyReport(event: React.FormEvent) {
+    event.preventDefault();
+    if (!token) { setAuthOpen(true); setAuthMessage('Sign in to submit a safety report.'); return; }
+    const latitude=Number(reportLat), longitude=Number(reportLon);
+    if (!Number.isFinite(latitude)||!Number.isFinite(longitude)||latitude < -90||latitude>90||longitude < -180||longitude>180) { setReportNotice('Enter valid GPS coordinates.'); return; }
+    setBusy(true);setReportNotice('');
+    try {
+      const result=await api<{message:string}>('/api/v1/safety-reports',{method:'POST',body:JSON.stringify({title:reportTitle,description:reportDescription,category:reportCategory,latitude,longitude})},token);
+      setReportTitle('');setReportDescription('');setReportNotice(result.message||'Submitted for review.');
+    } catch(e) { setReportNotice(e instanceof Error?e.message:'Report submission failed.'); }
+    finally { setBusy(false); }
+  }
+  async function loadPendingReports() {
+    if(!token){setAuthOpen(true);setAuthMessage('Sign in with the configured admin account.');return;}
+    try { const data=await api<{reports:SafetyReport[]}>('/api/v1/admin/safety-reports',{},token);setPendingReports(data.reports||[]);setReportNotice('Admin review queue loaded.'); }
+    catch(e){setReportNotice(e instanceof Error?e.message:'Admin access denied.');}
+  }
+  async function moderateReport(id:string,status:'approved'|'rejected') {
+    if(!token)return;
+    try { await api('/api/v1/admin/safety-reports/'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({status})},token);await loadPendingReports();const pub=await api<{reports:SafetyReport[]}>('/api/v1/safety-reports');setSafetyReports(pub.reports||[]); }
+    catch(e){setReportNotice(e instanceof Error?e.message:'Moderation failed.');}
+  }
+  async function deleteReport(id:string) {
+    if(!token||!window.confirm('Permanently delete this report?'))return;
+    try { await api('/api/v1/admin/safety-reports/'+encodeURIComponent(id),{method:'DELETE'},token);await loadPendingReports();const pub=await api<{reports:SafetyReport[]}>('/api/v1/safety-reports');setSafetyReports(pub.reports||[]); }
+    catch(e){setReportNotice(e instanceof Error?e.message:'Delete failed.');}
+  }
+  async function importSafetyReports() {
+    if(!token)return;
+    try {const result=await api<{inserted:number;skipped:number;failed_feeds:number;message:string}>('/api/v1/admin/safety-reports/import',{method:'POST'},token);setReportNotice(`Import finished: ${result.inserted} added, ${result.skipped} skipped, ${result.failed_feeds} feed errors. ${result.message}`);await loadPendingReports();}
+    catch(e){setReportNotice(e instanceof Error?e.message:'Import failed. Configure trusted HTTPS RSS feeds in the API environment.');}
+  }
+\n  const database = apiStatus?.database ?? (apiError ? 'unavailable' : 'checking');
   const suggestions = (items: PlaceOption[], onChoose: (p: PlaceOption) => void) => items.length > 0 && <div className="suggestions" role="listbox">{items.map((p, i) => <button type="button" role="option" key={`${p.label}-${i}`} onClick={() => onChoose(p)}><MapPin size={15} /><span>{p.label}<small>{p.latitude.toFixed(4)}, {p.longitude.toFixed(4)}</small></span></button>)}</div>;
 
   return <div className="app-shell">
@@ -297,7 +339,27 @@ export default function App() {
 
       <section className="workspace" id="account"><div className="section-heading"><div><span className="eyebrow">PERSONAL WORKSPACE</span><h2>Saved places & recent routes</h2><p>Your private data is loaded from the API after sign-in.</p></div>{user ? <span className="secure-label"><ShieldCheck size={15}/> {user.email}</span> : <button className="secondary-button" onClick={()=>setAuthOpen(true)}><LogIn size={15}/> Sign in</button>}</div><div className="account-grid"><div className="panel data-panel"><div className="panel-heading"><div className="panel-icon"><Bookmark size={18}/></div><div><h3>Saved places</h3><p>Stored in your account</p></div></div>{!user ? <p className="empty-state">Sign in to save and retrieve places.</p> : savedPlaces.length ? savedPlaces.map(p=><div className="data-row" key={p.id}><button className="place-link" onClick={()=>{const loc={label:p.label,latitude:p.latitude,longitude:p.longitude};setDestination(loc);setDestinationText(loc.label);setDestinationOptions([]);}}><MapPin size={15}/><span><strong>{p.label}</strong><small>{p.latitude.toFixed(4)}, {p.longitude.toFixed(4)}</small></span></button><button className="subtle-icon" onClick={()=>deletePlace(p.id)} aria-label={`Delete ${p.label}`}><Trash2 size={15}/></button></div>) : <p className="empty-state">No saved places yet. Choose a geocoded location above and tap Save.</p>}</div><div className="panel data-panel"><div className="panel-heading"><div className="panel-icon"><Clock size={18}/></div><div><h3>Route history</h3><p>Latest 50 saved routes</p></div></div>{!user ? <p className="empty-state">Sign in to persist your calculated route history.</p> : history.length ? history.map(h=><div className="data-row" key={h.id}><span><strong>{h.origin?.label || 'Origin'} → {h.destination?.label || 'Destination'}</strong><small>{h.vehicle} · {h.route_summary?.distance_m ? distanceLabel(h.route_summary.distance_m) : 'Distance unavailable'} · {new Date(h.created_at).toLocaleString()}</small></span><button className="subtle-icon" title="Use destination" onClick={()=>{setOrigin(h.origin);setOriginText(h.origin?.label||'');setDestination(h.destination);setDestinationText(h.destination?.label||'');setVehicle(h.vehicle);}}><Navigation size={15}/></button></div>) : <p className="empty-state">No routes saved yet. Sign in and calculate a route to keep its summary.</p>}</div></div></section>
 
-      <section className="system-section" id="status"><div className="section-heading"><div><span className="eyebrow">TRANSPARENCY</span><h2>System status</h2><p>Values below come from real API responses and current configuration.</p></div><button className="secondary-button" onClick={()=>{setApiStatus(null);setApiError('');api<ApiStatus>('/api/v1/status').then(setApiStatus).catch(e=>setApiError(e instanceof Error?e.message:'API unavailable'));}}><Activity size={15}/> Refresh status</button></div><div className="panel status-panel"><div className="status-row"><span className="status-symbol"><Activity size={18}/></span><span><strong>SafeRoute API</strong><small>{apiError || (apiStatus ? 'API responded successfully.' : 'Checking configured API endpoint…')}</small></span><span className={apiStatus?'status-value good':'status-value'}>{apiStatus?'Connected':'Unavailable / pending'}</span></div><div className="status-row"><span className="status-symbol"><ShieldCheck size={18}/></span><span><strong>PostgreSQL</strong><small>{database==='connected'?'Database ping succeeded.':database==='not_configured'?'DATABASE_URL is not set on the API.':database==='unavailable'?'API could not confirm database connectivity.':'Awaiting API response.'}</small></span><span className={database==='connected'?'status-value good':'status-value'}>{database}</span></div><div className="status-row"><span className="status-symbol"><MapPin size={18}/></span><span><strong>Geocoding & directions</strong><small>{MAP_KEY?'Web map tiles configured; backend MAPTILER_API_KEY is required for search and routes.':'Configure VITE_MAPTILER_KEY and API MAPTILER_API_KEY.'}</small></span><span className={MAP_KEY?'status-value good':'status-value'}>{MAP_KEY?'Partially configured':'Not configured'}</span></div><div className="status-row"><span className="status-symbol"><Bell size={18}/></span><span><strong>SOS delivery</strong><small>GPS events can be recorded. No SMS/voice notification provider is configured.</small></span><span className="status-value">Not configured</span></div></div></section>
+
+      <section className="system-section" id="safety-reports">
+        <div className="section-heading"><div><span className="eyebrow">COMMUNITY + PUBLIC SOURCES</span><h2>Safety reports</h2><p>Only admin-approved reports appear here. Imported feed items remain pending until reviewed; this is not a live emergency dispatch service.</p></div><button className="secondary-button" onClick={()=>{api<{reports:SafetyReport[]}>('/api/v1/safety-reports').then(x=>setSafetyReports(x.reports||[])).catch(e=>setReportNotice(e instanceof Error?e.message:'Refresh failed.'));}}><Activity size={15}/> Refresh</button></div>
+        <div className="panel" style={{padding:'20px',marginBottom:'18px'}}>
+          <h3>Submit a report</h3><p className="fine-print">Sign in required. Reports are private to moderators until approved. Add coordinates from the incident location; do not include private or identifying details.</p>
+          <form className="auth-form" onSubmit={submitSafetyReport}>
+            <label>Title<input required minLength={5} maxLength={180} value={reportTitle} onChange={e=>setReportTitle(e.target.value)}/></label>
+            <label>Category<select value={reportCategory} onChange={e=>setReportCategory(e.target.value)}><option value="accident">Accident</option><option value="roadblock">Roadblock</option><option value="hazard">Road hazard</option><option value="crime">Crime / safety concern</option><option value="weather">Weather</option><option value="other">Other</option></select></label>
+            <label>Description<textarea required minLength={10} maxLength={3000} rows={3} value={reportDescription} onChange={e=>setReportDescription(e.target.value)}/></label>
+            <div className="form-grid"><label>Latitude<input required type="number" step="any" min="-90" max="90" value={reportLat} onChange={e=>setReportLat(e.target.value)}/></label><label>Longitude<input required type="number" step="any" min="-180" max="180" value={reportLon} onChange={e=>setReportLon(e.target.value)}/></label></div>
+            <button className="primary-button" type="submit" disabled={busy}>Submit for review</button>
+          </form>
+        </div>
+        <div className="panel" style={{padding:'20px',marginBottom:'18px'}}><div className="section-heading"><div><h3>Admin moderation</h3><p className="fine-print">Access is enforced by the API using ADMIN_EMAIL; the UI alone grants no privileges.</p></div><div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}><button className="secondary-button" onClick={loadPendingReports}>Load queue</button><button className="secondary-button" onClick={importSafetyReports}>Import web feeds</button></div></div>
+          {pendingReports.map(report=><article key={report.id} className="status-row"><span><strong>{report.title}</strong><small>{report.category} · {report.source_name} · {report.latitude.toFixed(4)}, {report.longitude.toFixed(4)}</small><small>{report.description}</small>{report.source_url&&<a href={report.source_url} target="_blank" rel="noreferrer">Open source</a>}</span><div style={{display:'flex',gap:'6px',flexWrap:'wrap'}}><button className="secondary-button" onClick={()=>moderateReport(report.id,'approved')}>Approve</button><button className="secondary-button" onClick={()=>moderateReport(report.id,'rejected')}>Reject</button><button className="subtle-icon" aria-label="Delete report" onClick={()=>deleteReport(report.id)}><Trash2 size={16}/></button></div></article>)}
+          {pendingReports.length===0&&<p className="fine-print">Queue not loaded or no pending reports. Use “Load queue”; an access error means ADMIN_EMAIL/session must be configured.</p>}
+        </div>
+        <div className="panel" style={{padding:'20px'}}><h3>Approved reports ({safetyReports.length})</h3>{safetyReports.length===0?<p className="fine-print">No approved safety reports are currently available. No placeholder incidents are shown.</p>:safetyReports.map(report=><article key={report.id} className="status-row"><span><strong>{report.title}</strong><small>{report.category} · {report.source_name} · {report.latitude.toFixed(4)}, {report.longitude.toFixed(4)}</small><small>{report.description}</small>{report.source_url&&<a href={report.source_url} target="_blank" rel="noreferrer">Source</a>}</span><span className="status-value good">Approved</span></article>)}</div>
+        {reportNotice&&<p className="inline-message" role="status">{reportNotice}</p>}
+      </section>
+\n      <section className="system-section" id="status"><div className="section-heading"><div><span className="eyebrow">TRANSPARENCY</span><h2>System status</h2><p>Values below come from real API responses and current configuration.</p></div><button className="secondary-button" onClick={()=>{setApiStatus(null);setApiError('');api<ApiStatus>('/api/v1/status').then(setApiStatus).catch(e=>setApiError(e instanceof Error?e.message:'API unavailable'));}}><Activity size={15}/> Refresh status</button></div><div className="panel status-panel"><div className="status-row"><span className="status-symbol"><Activity size={18}/></span><span><strong>SafeRoute API</strong><small>{apiError || (apiStatus ? 'API responded successfully.' : 'Checking configured API endpoint…')}</small></span><span className={apiStatus?'status-value good':'status-value'}>{apiStatus?'Connected':'Unavailable / pending'}</span></div><div className="status-row"><span className="status-symbol"><ShieldCheck size={18}/></span><span><strong>PostgreSQL</strong><small>{database==='connected'?'Database ping succeeded.':database==='not_configured'?'DATABASE_URL is not set on the API.':database==='unavailable'?'API could not confirm database connectivity.':'Awaiting API response.'}</small></span><span className={database==='connected'?'status-value good':'status-value'}>{database}</span></div><div className="status-row"><span className="status-symbol"><MapPin size={18}/></span><span><strong>Geocoding & directions</strong><small>{MAP_KEY?'Web map tiles configured; backend MAPTILER_API_KEY is required for search and routes.':'Configure VITE_MAPTILER_KEY and API MAPTILER_API_KEY.'}</small></span><span className={MAP_KEY?'status-value good':'status-value'}>{MAP_KEY?'Partially configured':'Not configured'}</span></div><div className="status-row"><span className="status-symbol"><Bell size={18}/></span><span><strong>SOS delivery</strong><small>GPS events can be recorded. No SMS/voice notification provider is configured.</small></span><span className="status-value">Not configured</span></div></div></section>
     </main>
     <footer><a className="brand footer-brand" href="#top"><span className="brand-mark"><Navigation size={18}/></span><span>SafeRoute<span className="brand-accent">AI</span><small>BUILT FOR MORE CONFIDENT JOURNEYS</small></span></a><p>Navigation assistance only — not a substitute for emergency services or posted road instructions.</p><span>SafeRoute AI • Provider-backed features report their real status</span></footer>
 
