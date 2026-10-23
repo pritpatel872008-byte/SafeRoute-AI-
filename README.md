@@ -30,7 +30,8 @@ Safety-first navigation web app with a Go API, PostgreSQL persistence, provider-
 Required for persisted functionality:
 - `DATABASE_URL`: PostgreSQL connection string.
 - `CORS_ORIGINS`: comma-separated exact frontend origins, e.g. `http://localhost:5173,https://your-web-project.vercel.app`.
-- `MAPTILER_API_KEY`: server-side MapTiler key for geocoding and directions.\n- `RESEND_API_KEY`, `MAIL_FROM`, `PASSWORD_RESET_URL`: optional password-reset email delivery settings. Use a verified sender and your actual frontend origin.
+- `MAPTILER_API_KEY`: server-side MapTiler key for geocoding and directions.
+- `RESEND_API_KEY`, `MAIL_FROM`, `PASSWORD_RESET_URL`: optional password-reset email delivery settings. Use a verified sender and your actual frontend origin.
 - `PORT`: provided by Render; local default is `8080`.
 
 The API automatically applies the embedded migrations at startup. A valid PostgreSQL service must be available first. The Render blueprint marks credentials as unsynced secrets; enter them in Render's environment settings yourself. Do not deploy until the database plan and cost are explicitly acceptable to you.
