@@ -141,7 +141,7 @@ export default function App() {
 
   useEffect(() => {
     const query = originText.trim();
-    if (!MAP_KEY || query.length < 3 || origin?.label === query) { setOriginOptions([]); return; }
+    if (query.length < 3 || origin?.label === query) { setOriginOptions([]); return; }
     const timer = window.setTimeout(() => {
       api<{ features: PlaceOption[] }>(`/api/v1/geocode?q=${encodeURIComponent(query)}`).then(x => setOriginOptions(x.features || [])).catch(() => setOriginOptions([]));
     }, 350);
@@ -150,7 +150,7 @@ export default function App() {
 
   useEffect(() => {
     const query = destinationText.trim();
-    if (!MAP_KEY || query.length < 3 || destination?.label === query) { setDestinationOptions([]); return; }
+    if (query.length < 3 || destination?.label === query) { setDestinationOptions([]); return; }
     const timer = window.setTimeout(() => {
       api<{ features: PlaceOption[] }>(`/api/v1/geocode?q=${encodeURIComponent(query)}`).then(x => setDestinationOptions(x.features || [])).catch(() => setDestinationOptions([]));
     }, 350);
