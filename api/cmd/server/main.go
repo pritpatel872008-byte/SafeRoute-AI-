@@ -53,6 +53,8 @@ func main() {
 	mux.HandleFunc("POST /api/v1/routes", s.directions)
 	mux.HandleFunc("POST /api/v1/auth/register", s.register)
 	mux.HandleFunc("POST /api/v1/auth/login", s.login)
+	mux.HandleFunc("POST /api/v1/auth/password-reset/request", s.requestPasswordReset)
+	mux.HandleFunc("POST /api/v1/auth/password-reset/confirm", s.confirmPasswordReset)
 	mux.Handle("GET /api/v1/auth/me", s.authenticate(http.HandlerFunc(s.me)))
 	mux.Handle("POST /api/v1/auth/logout", s.authenticate(http.HandlerFunc(s.logout)))
 	mux.Handle("GET /api/v1/contacts", s.authenticate(http.HandlerFunc(s.listContacts)))
