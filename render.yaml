@@ -16,3 +16,9 @@ services:
         sync: false
       - key: MAPTILER_API_KEY
         sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: PASSWORD_RESET_URL
+        sync: false
