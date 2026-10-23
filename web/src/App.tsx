@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import L from 'leaflet';
 import { Activity, ArrowDownUp, Bell, CarFront, Compass, Crosshair, LocateFixed, MapPin, Menu, Navigation, ShieldCheck, Siren, Truck, Bike, Footprints, Users, X } from 'lucide-react';
 
 type Vehicle = 'car' | 'motorcycle' | 'truck' | 'walking';
@@ -15,6 +16,7 @@ export default function App() {
   const [locationMessage, setLocationMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
+  const mapElement = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -61,6 +63,17 @@ export default function App() {
     setLocationMessage('Route provider integration is not configured yet. Add a MapTiler key and routing endpoint before route results can be shown.');
   }
 
+  useEffect(() => {
+    if (!mapElement.current) return;
+    const key = import.meta.env.VITE_MAPTILER_KEY;
+    if (!key) return;
+    const map = L.map(mapElement.current, { zoomControl: true }).setView([20.5937, 78.9629], 5);
+    L.tileLayer(`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${encodeURIComponent(key)}`, {
+      tileSize: 512, zoomOffset: -1, minZoom: 1, attribution: '&copy; MapTiler &copy; OpenStreetMap contributors'
+    }).addTo(map);
+    return () => map.remove();
+  }, []);
+
   const database = apiStatus?.database ?? (apiError ? 'unavailable' : 'checking');
 
   return (
@@ -101,7 +114,7 @@ export default function App() {
             </form>
             <div className="panel map-panel">
               <div className="map-topline"><div><span className="eyebrow">LIVE MAP</span><h3>Journey overview</h3></div><span className="map-chip"><Activity size={14} /> {import.meta.env.VITE_MAPTILER_KEY ? 'Map key provided' : 'Map provider pending'}</span></div>
-              <div className="map-placeholder"><div className="map-grid" /><div className="map-route route-a" /><div className="map-route route-b" /><div className="map-route route-c" /><span className="map-marker marker-a"><MapPin size={18} /></span><span className="map-marker marker-b"><Crosshair size={18} /></span><div className="map-center"><span className="map-center-icon"><Compass size={24} /></span><strong>Ready for your route</strong><span>Connect a map provider to load real map tiles and directions.</span></div><span className="map-legend"><span /> Road network preview unavailable</span></div>
+              <div className={import.meta.env.VITE_MAPTILER_KEY ? 'map-placeholder real-map' : 'map-placeholder'}>{import.meta.env.VITE_MAPTILER_KEY ? <div className="leaflet-map" ref={mapElement} aria-label="Live map from MapTiler" /> : <div className="map-center"><span className="map-center-icon"><Compass size={24} /></span><strong>Map provider not configured</strong><span>Add a valid VITE_MAPTILER_KEY to load real map tiles. No route or live road data is simulated.</span></div>}</div>
               <div className="map-footer"><span><span className="status-dot" /> {database === 'connected' ? 'Database connected' : database === 'not_configured' ? 'Database not configured' : database === 'unavailable' ? 'API unavailable' : 'Checking connection'}</span><span>Mode: {vehicle === 'motorcycle' ? 'Two-wheeler' : vehicle[0].toUpperCase()+vehicle.slice(1)}</span></div>
             </div>
           </div>
