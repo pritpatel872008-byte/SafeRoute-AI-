@@ -27,7 +27,7 @@ export default function App() {
       })
       .then(setApiStatus)
       .catch(error => {
-        if (error.name !== 'AbortError') setApiError('API unavailable. Start the backend to enable connected services.');
+        if (!(error instanceof Error) || error.name !== 'AbortError') setApiError('API unavailable. Start the backend to enable connected services.');
       });
     return () => controller.abort();
   }, []);
