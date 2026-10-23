@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"strings"
 )
 
 func TestParseCoordinate(t *testing.T) {
@@ -36,4 +37,15 @@ func TestDirectionsRequireConfiguredProvider(t *testing.T) {
 	req:=httptest.NewRequest(http.MethodPost,"/api/v1/routes",nil)
 	s.directions(rec,req)
 	if rec.Code!=http.StatusServiceUnavailable { t.Fatalf("status=%d, want %d",rec.Code,http.StatusServiceUnavailable) }
+}
+
+func TestTruckRoutingIsNotMisrepresentedAsCarRouting(t *testing.T) {
+	t.Setenv("MAPTILER_API_KEY", "configured-test-key")
+	s := &server{}
+	rec := httptest.NewRecorder()
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/routes", strings.NewReader(`{"origin":"21.17,72.83","destination":"21.18,72.84","vehicle":"truck"}`))
+	s.directions(rec, req)
+	if rec.Code != http.StatusUnprocessableEntity {
+		t.Fatalf("status=%d, want %d", rec.Code, http.StatusUnprocessableEntity)
+	}
 }
