@@ -56,3 +56,28 @@ footer{border-top:1px solid rgba(145,167,230,.14);margin-top:40px}
  .nav-links{backdrop-filter:blur(18px)}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* Structural dashboard refresh: route-first workspace, real connection panel, map-led layout */
+.hero{min-height:290px;padding-top:38px;padding-bottom:30px;gap:32px}
+.hero h1{font-size:clamp(40px,4.3vw,56px);letter-spacing:-2px}
+.hero-status{width:min(320px,35%);padding:18px 20px;align-self:center;flex-shrink:0}
+.hero-status-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:13px;border-bottom:1px solid var(--border)}
+.hero-status-row{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid var(--border)}
+.hero-status-row:last-of-type{border-bottom:0}
+.hero-status-row strong,.hero-status-row small{display:block}
+.hero-status-row strong{font-size:12px}
+.hero-status-row small{font-size:10px;color:var(--muted);margin-top:4px}
+.hero-status-note{font-size:9px;color:#7e8aa8;padding-top:11px}
+.workspace{padding-top:30px}
+.planner-grid{grid-template-columns:minmax(320px,.72fr) minmax(0,1.28fr);gap:20px}
+.route-panel{padding:25px}
+.map-panel{padding:22px}
+.map-placeholder{height:clamp(350px,38vw,490px)}
+.real-map{height:clamp(350px,38vw,490px)}
+.map-footer{padding-top:17px}
+.section-heading h2{font-size:clamp(25px,2.5vw,31px)}
+.panel{box-shadow:0 16px 45px rgba(0,0,0,.16)}
+.topbar{position:relative}
+@media(max-width:900px){.hero-status{width:34%;padding:15px}.planner-grid{grid-template-columns:minmax(285px,.82fr) minmax(0,1.18fr)}.map-placeholder,.real-map{height:360px}}
+@media(max-width:760px){.hero{min-height:0;padding:35px 0 24px;display:flex;flex-direction:column;align-items:stretch;gap:20px}.hero h1{font-size:42px;letter-spacing:-1.5px}.hero-status{width:100%;max-width:none}.planner-grid{grid-template-columns:minmax(0,1fr);gap:14px}.route-panel,.map-panel{padding:17px}.map-placeholder,.real-map{height:clamp(300px,95vw,430px)}.workspace{padding-top:24px}.section-heading{align-items:flex-start;gap:12px}.section-heading h2{font-size:25px}.secure-label{font-size:9px}.hero-stats{gap:14px;flex-wrap:wrap}}
