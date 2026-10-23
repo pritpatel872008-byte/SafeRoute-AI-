@@ -194,3 +194,131 @@ footer{padding-top:22px}
  .status-value{margin-left:46px}
  footer{gap:15px}
 }
+
+
+/* FULL VISUAL REDESIGN v2 — map-first command center, UI only */
+:root{--bg:#060a12;--panel:#0b1220;--border:rgba(133,157,195,.17);--muted:#8293ad;--purple:#9a83ff;--blue:#57b8ff}
+body{background:#060a12}
+.app-shell{max-width:1600px;padding:0 34px;background:radial-gradient(ellipse at 76% 0%,rgba(39,90,116,.13),transparent 34%),#060a12}
+.topbar{height:76px;border-bottom-color:rgba(126,152,189,.13)}
+.brand-mark{border-radius:13px;background:linear-gradient(145deg,#8e72ff,#3e91d9);color:white;border:0;box-shadow:0 0 24px rgba(120,99,255,.25)}
+.brand-accent{color:#8ad9ff}
+.nav-links{gap:26px}
+.nav-links a{font-size:12px}
+.nav-links a.active{color:#b8e7ff;border-bottom-color:#73d5ff}
+.account-button{border-radius:11px;background:#121d2e;border-color:rgba(139,164,201,.22)}
+/* Hero becomes a compact live command header, not a marketing banner */
+.hero{display:flex!important;min-height:0;padding:22px 2px 18px;gap:20px;align-items:center}
+.hero-copy{max-width:650px}
+.hero .eyebrow{color:#78d9ff;letter-spacing:1.7px}
+.hero h1{font-size:clamp(28px,3vw,38px);letter-spacing:-1.3px;margin:9px 0 7px}
+.hero h1 span{background:linear-gradient(95deg,#a69aff,#66dcff);color:transparent;background-clip:text}
+.hero-copy>p{font-size:12px;line-height:1.55;max-width:620px}
+.hero-stats{margin-top:13px;gap:17px}
+.stat-icon{border-color:rgba(103,198,255,.2);background:rgba(70,147,198,.09);color:#78d9ff}
+.hero-status{width:290px;max-width:36%;padding:13px 16px;border-radius:14px;background:linear-gradient(145deg,rgba(15,28,43,.98),rgba(8,16,28,.98))}
+.hero-status-top{padding-bottom:7px}
+.hero-status-row{padding:8px 0}
+.hero-status-row strong{font-size:11px}
+.hero-status-row small{font-size:10px}
+.hero-status-note{font-size:9px}
+/* Replace the old side-by-side cards with a map command center and floating planner */
+.workspace{padding-top:10px!important}
+.workspace .section-heading{margin-bottom:12px}
+.workspace .section-heading h2{font-size:25px;margin:5px 0}
+.workspace .section-heading .eyebrow{color:#77d9ff}
+.planner-grid{display:block;position:relative;min-height:560px}
+.map-panel{width:100%;padding:17px;border-radius:20px;background:#0a1420;border-color:rgba(106,190,225,.18);position:relative;overflow:hidden}
+.map-topline{min-height:46px;display:flex;align-items:center;justify-content:space-between;margin:0 0 12px;padding:0 2px}
+.map-topline .eyebrow{color:#79d9ff}
+.map-topline h3{font-size:17px}
+.map-chip{background:rgba(7,17,28,.8);border:1px solid rgba(111,191,220,.18);padding:8px 11px;border-radius:10px;color:#9ab4ca}
+.map-placeholder,.real-map{height:clamp(440px,42vw,540px);border-radius:15px;border:1px solid rgba(100,165,187,.16);overflow:hidden}
+.map-placeholder:not(.real-map){background-color:#091c22;background-image:linear-gradient(28deg,transparent 47%,rgba(69,123,121,.25) 48%,rgba(69,123,121,.25) 49%,transparent 50%),linear-gradient(118deg,transparent 46%,rgba(69,123,121,.22) 47%,rgba(69,123,121,.22) 48%,transparent 49%),linear-gradient(90deg,transparent 48%,rgba(92,133,139,.16) 49%,rgba(92,133,139,.16) 50%,transparent 51%),linear-gradient(0deg,transparent 48%,rgba(92,133,139,.16) 49%,rgba(92,133,139,.16) 50%,transparent 51%);background-size:190px 150px,240px 190px,82px 82px,82px 82px;position:relative}
+.map-placeholder:not(.real-map)::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 78% 23%,rgba(60,154,121,.14),transparent 40%),radial-gradient(ellipse at 30% 82%,rgba(38,118,148,.13),transparent 45%),linear-gradient(90deg,rgba(3,12,20,.15),rgba(3,12,20,.02) 65%,rgba(3,12,20,.2));pointer-events:none}
+.map-center{z-index:1;position:relative;background:rgba(5,14,24,.91);border:1px solid rgba(100,196,232,.2);border-radius:15px;box-shadow:0 16px 55px rgba(0,0,0,.3);padding:20px;backdrop-filter:blur(14px)}
+.map-center-icon{color:#78d9ff}
+.map-center strong{font-size:14px}
+.map-center>span:last-child{font-size:11px;line-height:1.6}
+.map-footer{position:absolute;left:29px;right:29px;bottom:27px;padding:10px 13px;border:1px solid rgba(128,174,198,.13);border-radius:11px;background:rgba(4,12,21,.88);backdrop-filter:blur(12px);font-size:10px}
+.map-footer span{gap:7px}
+/* Floating glass route panel */
+.route-panel{position:absolute;z-index:5;left:31px;top:76px;width:min(330px,calc(100% - 62px));padding:19px;border-radius:17px;background:rgba(7,15,27,.96);border:1px solid rgba(123,166,201,.26);box-shadow:0 22px 65px rgba(0,0,0,.42),0 0 0 1px rgba(110,185,225,.04);backdrop-filter:blur(22px)}
+.route-panel .panel-heading{margin-bottom:17px}
+.route-panel .panel-icon{background:linear-gradient(145deg,rgba(111,116,255,.22),rgba(71,194,255,.09));color:#8ddfff;border-color:rgba(110,197,242,.2)}
+.field-label,.vehicle-label{color:#8ba4bc;font-size:9px;letter-spacing:1.2px}
+.location-input{background:rgba(3,10,19,.86);border-color:rgba(120,160,196,.2);min-height:45px;border-radius:10px}
+.location-input:focus-within{border-color:rgba(91,206,255,.68);box-shadow:0 0 0 3px rgba(75,185,244,.08)}
+.field-pin.start{color:#63e3b0}.field-pin.end{color:#83cfff}
+.field-action{color:#83d9ff}
+.field-connector{border-left-color:rgba(112,176,211,.35)}
+.vehicle-option{background:rgba(8,18,31,.8);border-color:rgba(120,160,196,.18);border-radius:10px}
+.vehicle-option.selected{background:linear-gradient(145deg,rgba(125,103,255,.2),rgba(51,170,225,.1));border-color:rgba(118,183,255,.5);color:#e6f6ff;box-shadow:inset 0 0 18px rgba(90,170,255,.04)}
+.primary-button{background:linear-gradient(100deg,#7564ee,#3d9fd7);box-shadow:0 8px 25px rgba(68,133,226,.2);border:0;border-radius:11px}
+.fine-print{font-size:10px;line-height:1.55}
+.inline-message{border-radius:9px;background:rgba(86,173,217,.08);border:1px solid rgba(86,173,217,.15);padding:10px;font-size:11px}
+.route-summary{position:relative;z-index:2;background:rgba(6,15,26,.95);border-color:rgba(110,189,220,.18);border-radius:12px}
+.turn-list{background:rgba(6,15,26,.85);border-radius:10px;padding:12px}
+/* Keep remaining existing sections and make them feel like the same product */
+.safety-section,.system-section{padding-top:34px}
+.safety-section .eyebrow,.system-section .eyebrow{color:#78d9ff}
+.safety-grid{gap:16px}
+.safety-card,.data-panel,.status-panel{background:linear-gradient(145deg,#0c1726,#09111e);border-color:rgba(126,164,197,.16);border-radius:17px}
+.safety-card-icon{background:rgba(90,174,225,.1);color:#8ad8ff;border:1px solid rgba(90,174,225,.18);border-radius:12px}
+.safety-card h3,.data-panel h3{font-size:15px}
+.secondary-button{background:#101d2d;border-color:rgba(125,163,196,.2);border-radius:10px}
+.danger-button{border-radius:10px;box-shadow:0 8px 24px rgba(255,75,100,.12)}
+.status-row{border-color:rgba(126,164,197,.12)}
+.status-symbol{background:rgba(90,174,225,.08);color:#8ad8ff;border-radius:10px}
+footer{border-color:rgba(126,164,197,.13)}
+@media(max-width:900px){
+ .app-shell{padding:0 20px}
+ .hero{padding:20px 0 15px}
+ .hero-status{width:265px}
+ .planner-grid{min-height:590px}
+ .map-placeholder,.real-map{height:550px}
+ .route-panel{left:22px;width:310px}
+}
+@media(max-width:760px){
+ .app-shell{padding:0 12px}
+ .topbar{height:68px}
+ .brand{font-size:16px}
+ .brand-mark{width:35px;height:35px}
+ .topbar-right{gap:7px}
+ .connection{display:none}
+ .hero{display:flex!important;flex-direction:column;align-items:stretch;gap:13px;padding:18px 2px 12px}
+ .hero h1{font-size:30px;letter-spacing:-1px;margin:7px 0}
+ .hero-copy>p{font-size:11px;line-height:1.5}
+ .hero-stats{gap:10px;flex-wrap:wrap;margin-top:12px}
+ .hero-stats>div{gap:7px}
+ .hero-stats strong{font-size:10px}
+ .hero-stats small{font-size:8px}
+ .hero-status{width:100%;max-width:none;padding:11px 13px}
+ .hero-status-row{padding:7px 0}
+ .workspace{padding-top:8px!important}
+ .workspace .section-heading{align-items:flex-start;gap:9px;margin-bottom:11px}
+ .workspace .section-heading h2{font-size:22px;line-height:1.2}
+ .workspace .section-heading p{font-size:10px;line-height:1.45}
+ .secure-label{padding:7px 8px;font-size:8px;flex-shrink:0}
+ .planner-grid{display:flex;flex-direction:column;gap:11px;min-height:0}
+ .route-panel{position:relative;left:auto;top:auto;width:100%;order:0;padding:15px;border-radius:15px}
+ .map-panel{order:1;padding:12px;border-radius:15px}
+ .map-topline{min-height:0;margin-bottom:10px;gap:8px}
+ .map-topline h3{font-size:14px}
+ .map-chip{font-size:8px;padding:7px;max-width:125px}
+ .map-placeholder,.real-map{height:clamp(300px,90vw,370px)}
+ .map-placeholder:not(.real-map){background-size:125px 100px,170px 135px,60px 60px,60px 60px}
+ .map-footer{position:relative;left:auto;right:auto;bottom:auto;margin-top:10px;padding:9px;font-size:9px}
+ .route-summary{gap:10px}
+ .route-panel .panel-heading{margin-bottom:15px}
+ .location-input{min-height:46px}
+ .vehicle-options{gap:5px}
+ .vehicle-option{min-height:60px;padding:8px 2px;font-size:9px}
+ .safety-section,.system-section{padding:25px 0}
+ .safety-grid,.account-grid{grid-template-columns:minmax(0,1fr)}
+ .safety-card{padding:17px}
+ .section-heading h2{font-size:23px}
+ .status-row{gap:9px;flex-wrap:wrap}
+ .status-value{margin-left:44px}
+ footer{gap:12px}
+}
