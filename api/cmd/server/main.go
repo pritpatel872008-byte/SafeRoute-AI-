@@ -163,7 +163,14 @@ func runMigrations(pool *pgxpool.Pool) error {
 		if err != nil { return fmt.Errorf("read migration %s: %w", entry.Name(), err) }
 		tx, err := pool.Begin(ctx)
 		if err != nil { return fmt.Errorf("begin migration %s: %w", entry.Name(), err) }
-		if _, err = tx.Exec(ctx, string(sqlBytes)); err != nil { _ = tx.Rollback(ctx); return fmt.Errorf("execute migration %s: %w", entry.Name(), err) }
+		for _, statement := range strings.Split(string(sqlBytes), ";") {
+			statement = strings.TrimSpace(statement)
+			if statement == "" { continue }
+			if _, err = tx.Exec(ctx, statement); err != nil {
+				_ = tx.Rollback(ctx)
+				return fmt.Errorf("execute migration %s: %w", entry.Name(), err)
+			}
+		}
 		if _, err = tx.Exec(ctx, `INSERT INTO schema_migrations(name) VALUES($1)`, entry.Name()); err != nil { _ = tx.Rollback(ctx); return fmt.Errorf("record migration %s: %w", entry.Name(), err) }
 		if err = tx.Commit(ctx); err != nil { return fmt.Errorf("commit migration %s: %w", entry.Name(), err) }
 		log.Printf("applied database migration %s", entry.Name())
