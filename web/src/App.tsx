@@ -45,7 +45,8 @@ export default function App() {
   const [token, setToken] = useState(() => sessionStorage.getItem(tokenKey) || '');
   const [user, setUser] = useState<User | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
+  const [resetToken, setResetToken] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -78,6 +79,19 @@ export default function App() {
     setSavedPlaces(placeData.places || []);
     setHistory(historyData.routes || []);
     setSosEvents(sosData.events || []);
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const reset = params.get('token');
+    const resetEmail = params.get('email');
+    if (reset && resetEmail) {
+      setResetToken(reset);
+      setEmail(resetEmail);
+      setAuthMode('reset');
+      setAuthOpen(true);
+      window.history.replaceState({}, '', window.location.pathname + window.location.hash);
+    }
   }, []);
 
   useEffect(() => {
@@ -191,6 +205,23 @@ export default function App() {
   async function submitAuth(event: React.FormEvent) {
     event.preventDefault(); setAuthMessage(''); setBusy(true);
     try {
+      if (authMode === 'forgot') {
+        const result = await api<{ message: string }>('/api/v1/auth/password-reset/request', {
+          method: 'POST', body: JSON.stringify({ email })
+        });
+        setAuthMessage(result.message || 'If an account exists for that address, a reset email will be sent.');
+        return;
+      }
+      if (authMode === 'reset') {
+        const result = await api<{ message: string }>('/api/v1/auth/password-reset/confirm', {
+          method: 'POST', body: JSON.stringify({ email, token: resetToken, new_password: password })
+        });
+        setPassword('');
+        setResetToken('');
+        setAuthMode('login');
+        setAuthMessage(result.message || 'Password reset successful. Please sign in.');
+        return;
+      }
       const result = await api<{ token: string; user: User }>(authMode === 'register' ? '/api/v1/auth/register' : '/api/v1/auth/login', {
         method: 'POST', body: JSON.stringify({ email, password, display_name: displayName })
       });
@@ -270,6 +301,6 @@ export default function App() {
     </main>
     <footer><a className="brand footer-brand" href="#top"><span className="brand-mark"><Navigation size={18}/></span><span>SafeRoute<span className="brand-accent">AI</span><small>BUILT FOR MORE CONFIDENT JOURNEYS</small></span></a><p>Navigation assistance only — not a substitute for emergency services or posted road instructions.</p><span>SafeRoute AI • Provider-backed features report their real status</span></footer>
 
-    {authOpen && <div className="modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setAuthOpen(false);setAuthMessage('');}}}><section className="auth-modal panel" role="dialog" aria-modal="true" aria-labelledby="auth-title"><button className="subtle-icon modal-close" onClick={()=>{setAuthOpen(false);setAuthMessage('');}} aria-label="Close sign-in dialog"><X size={18}/></button><div className="panel-icon"><ShieldCheck size={21}/></div><h2 id="auth-title">{authMode==='login'?'Welcome back':'Create your SafeRoute account'}</h2><p>{authMode==='login'?'Sign in to access contacts, saved places and route history.':'Create an account with a password of at least 12 characters.'}</p><form onSubmit={submitAuth} className="auth-form">{authMode==='register'&&<label>Display name<input required value={displayName} onChange={e=>setDisplayName(e.target.value)} maxLength={100} autoComplete="name"/></label>}<label>Email<input type="email" required value={email} onChange={e=>setEmail(e.target.value)} autoComplete="email" maxLength={254}/></label><label>Password<input type="password" required value={password} onChange={e=>setPassword(e.target.value)} minLength={12} maxLength={72} autoComplete={authMode==='login'?'current-password':'new-password'}/></label><button className="primary-button" disabled={busy} type="submit">{authMode==='login'?<LogIn size={17}/>:<UserPlus size={17}/>} {busy?'Please wait…':authMode==='login'?'Sign in':'Create account'}</button>{authMessage&&<p className="inline-message" role="alert">{authMessage}</p>}</form><p className="auth-switch">{authMode==='login'?'New to SafeRoute?':'Already have an account?'} <button onClick={()=>{setAuthMode(authMode==='login'?'register':'login');setAuthMessage('');}}>{authMode==='login'?'Create account':'Sign in'}</button></p><small className="fine-print">Sessions expire after seven days. The current browser stores its session token in session storage.</small></section></div>}
+    {authOpen && <div className="modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setAuthOpen(false);setAuthMessage('');}}}><section className="auth-modal panel" role="dialog" aria-modal="true" aria-labelledby="auth-title"><button className="subtle-icon modal-close" onClick={()=>{setAuthOpen(false);setAuthMessage('');}} aria-label="Close sign-in dialog"><X size={18}/></button><div className="panel-icon"><ShieldCheck size={21}/></div><h2 id="auth-title">{authMode==='login'?'Welcome back':authMode==='register'?'Create your SafeRoute account':authMode==='forgot'?'Reset your password':'Choose a new password'}</h2><p>{authMode==='login'?'Sign in to access contacts, saved places and route history.':authMode==='register'?'Create an account with a password of at least 12 characters.':authMode==='forgot'?'We will send a one-time reset link if email delivery is configured and an account exists.':'Your reset link is one-time and expires after 30 minutes.'}</p><form onSubmit={submitAuth} className="auth-form">{authMode==='register'&&<label>Display name<input required value={displayName} onChange={e=>setDisplayName(e.target.value)} maxLength={100} autoComplete="name"/></label>}<label>Email<input type="email" required value={email} onChange={e=>setEmail(e.target.value)} autoComplete="email" maxLength={254}/></label>{(authMode==='login'||authMode==='register'||authMode==='reset')&&<label>{authMode==='reset'?'New password':'Password'}<input type="password" required value={password} onChange={e=>setPassword(e.target.value)} minLength={12} maxLength={72} autoComplete={authMode==='login'?'current-password':'new-password'}/></label>}{authMode==='reset'&&<p className="fine-print">Reset token loaded from the email link. If it is expired or invalid, request another reset link.</p>}<button className="primary-button" disabled={busy} type="submit">{authMode==='login'?<LogIn size={17}/>:authMode==='register'?<UserPlus size={17}/>:<ShieldCheck size={17}/>} {busy?'Please wait…':authMode==='login'?'Sign in':authMode==='register'?'Create account':authMode==='forgot'?'Send reset link':'Set new password'}</button>{authMessage&&<p className="inline-message" role="alert">{authMessage}</p>}</form>{authMode==='login'&&<p className="auth-switch"><button onClick={()=>{setAuthMode('forgot');setAuthMessage('');}}>Forgot password?</button></p>}{(authMode==='login'||authMode==='register')&&<p className="auth-switch">{authMode==='login'?'New to SafeRoute?':'Already have an account?'} <button onClick={()=>{setAuthMode(authMode==='login'?'register':'login');setAuthMessage('');}}>{authMode==='login'?'Create account':'Sign in'}</button></p>}{(authMode==='forgot'||authMode==='reset')&&<p className="auth-switch"><button onClick={()=>{setAuthMode('login');setPassword('');setResetToken('');setAuthMessage('');}}>Back to sign in</button></p>}<small className="fine-print">Sessions expire after seven days. Reset emails require a verified sender and configured provider credentials.</small></section></div>}
   </div>;
 }
