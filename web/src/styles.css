@@ -17,3 +17,42 @@
 @media(max-width:900px){.app-shell{padding:0 24px}.hero-orbit{margin-right:0;transform:scale(.82)}.planner-grid{grid-template-columns:minmax(290px,.9fr) minmax(0,1.1fr)}.nav-links{gap:18px}.account-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.app-shell{padding:0 16px}.topbar{height:72px}.brand{font-size:17px}.brand-mark{width:35px;height:35px}.topbar-right{gap:8px}.topbar-right .connection{display:none}.account-button{padding:9px 10px}.icon-button{display:grid}.nav-links{display:none;position:absolute;top:71px;left:16px;right:16px;z-index:20;flex-direction:column;align-items:stretch;gap:0;padding:9px 16px;background:#11172a;border:1px solid var(--border);border-radius:12px;box-shadow:0 15px 40px #0008}.nav-links.open{display:flex}.nav-links a{padding:13px 0;border-bottom:1px solid var(--border)}.nav-links a:last-child{border-bottom:0}.hero{padding:40px 0 28px;min-height:auto}.hero-copy{max-width:100%}.hero h1{font-size:42px;letter-spacing:-1.5px}.hero-orbit{display:none}.hero-stats{gap:16px;flex-wrap:wrap}.hero-stats small{max-width:140px;line-height:1.4}.workspace,.safety-section,.system-section{padding:24px 0 30px}.section-heading{gap:12px;align-items:flex-start;flex-wrap:wrap}.section-heading h2{font-size:23px}.section-heading p{line-height:1.6}.planner-grid,.account-grid{grid-template-columns:1fr}.route-panel{padding:18px}.map-panel{min-height:320px}.map-placeholder{min-height:270px}.safety-grid{grid-template-columns:1fr!important}.safety-card{padding:18px}.status-row{gap:10px}.status-row>span:nth-child(2){min-width:0;flex:1}.status-value{max-width:100px;overflow-wrap:anywhere;text-align:right}.route-summary{gap:15px}.route-summary .feature-state{margin-left:0}.footer-brand{margin-bottom:18px}footer{gap:12px!important}footer p{text-align:left!important}.auth-modal{padding:22px}.vehicle-option{padding:10px 6px}.vehicle-option span{font-size:9px}}
 @media(max-width:380px){.hero h1{font-size:36px}.hero-stats{flex-direction:column}.section-heading h2{font-size:21px}.route-panel{padding:14px}.vehicle-options{gap:6px}.vehicle-option{gap:5px}.map-chip{font-size:8px}.status-row{flex-wrap:wrap}.status-value{margin-left:39px;max-width:none;text-align:left}}
+
+
+/* SafeRoute AI refreshed premium layout — mobile-first finishing layer */
+:root{--bg:#070b17;--panel:rgba(17,24,45,.82);--border:rgba(145,167,230,.19);--muted:#a0afd0;--purple:#8b7cff;--blue:#65b9ff}
+body{background:radial-gradient(ellipse at 14% 0%,rgba(82,99,221,.18),transparent 34%),radial-gradient(ellipse at 90% 20%,rgba(27,161,207,.10),transparent 30%),#070b17}
+.app-shell{max-width:1500px;padding:0 clamp(18px,4vw,56px)}
+.topbar{height:78px;position:relative;z-index:20;backdrop-filter:blur(18px)}
+.brand-mark{border-radius:14px;box-shadow:0 0 30px rgba(127,110,255,.14)}
+.nav-links a{transition:color .2s,border-color .2s}
+.hero{min-height:330px;padding:54px clamp(4px,3vw,38px) 34px;border-bottom:1px solid rgba(145,167,230,.10)}
+.hero h1{font-size:clamp(39px,4.3vw,61px);letter-spacing:-2.5px}
+.hero-copy>p{font-size:14px;max-width:510px}
+.hero-orbit{filter:drop-shadow(0 12px 45px rgba(88,100,255,.12))}
+.orbit-core{backdrop-filter:blur(18px)}
+.panel{background:linear-gradient(145deg,rgba(19,27,51,.94),rgba(11,16,32,.90));border:1px solid rgba(147,166,229,.17);border-radius:20px;box-shadow:0 18px 50px rgba(0,0,0,.16)}
+.panel:hover{border-color:rgba(137,151,255,.27)}
+button{transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease}
+button:not(:disabled):active{transform:translateY(1px)}
+.primary-button{background:linear-gradient(110deg,#7b68f6,#4c9df5);box-shadow:0 9px 26px rgba(92,105,244,.23);border:1px solid rgba(188,187,255,.25)}
+.primary-button:hover{box-shadow:0 12px 34px rgba(92,105,244,.35);filter:brightness(1.08)}
+.secondary-button{background:rgba(24,34,62,.82);border:1px solid rgba(148,166,228,.22)}
+input,textarea,select{background:rgba(6,11,25,.72)!important;border:1px solid rgba(139,159,219,.24)!important;color:#f1f5ff!important;border-radius:11px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#8d80ff!important;box-shadow:0 0 0 3px rgba(141,128,255,.13)}
+.section-heading{margin-bottom:22px}
+.section-heading h2{letter-spacing:-.8px}
+.workspace,.system-section,.safety-section{scroll-margin-top:90px}
+#planner,#route-planner,#safety,#account,#status{scroll-margin-top:95px}
+footer{border-top:1px solid rgba(145,167,230,.14);margin-top:40px}
+@media(max-width:760px){
+ .app-shell{padding:0 16px}
+ .topbar{height:68px}
+ .hero{padding:38px 4px 28px;min-height:auto}
+ .hero h1{font-size:clamp(36px,10vw,48px);letter-spacing:-1.7px}
+ .hero-orbit{width:100%;max-width:260px;height:190px;margin:24px auto 0}
+ .hero-stats{gap:12px;flex-wrap:wrap}
+ .panel{border-radius:16px}
+ .nav-links{backdrop-filter:blur(18px)}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
