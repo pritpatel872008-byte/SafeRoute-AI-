@@ -46,6 +46,8 @@ func main() {
 	mux.Handle("GET /api/v1/contacts", s.authenticate(http.HandlerFunc(s.listContacts)))
 	mux.Handle("POST /api/v1/contacts", s.authenticate(http.HandlerFunc(s.createContact)))
 	mux.Handle("DELETE /api/v1/contacts/{id}", s.authenticate(http.HandlerFunc(s.deleteContact)))
+	mux.Handle("POST /api/v1/sos", s.authenticate(http.HandlerFunc(s.createSOS)))
+	mux.Handle("GET /api/v1/sos", s.authenticate(http.HandlerFunc(s.listSOS)))
 
 	handler := securityHeaders(cors(mux))
 	srv := &http.Server{
