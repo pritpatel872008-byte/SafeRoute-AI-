@@ -322,3 +322,51 @@ footer{border-color:rgba(126,164,197,.13)}
  .status-value{margin-left:44px}
  footer{gap:12px}
 }
+
+
+/* Google Maps-inspired, real street-map workspace */
+:root{--bg:#f1f3f4;--panel:#fff;--border:#dadce0;--muted:#5f6368}
+body{background:#f1f3f4;color:#202124}
+.app-shell{max-width:none;padding:0;background:#f1f3f4;color:#202124}
+.topbar{height:64px;padding:0 24px;background:#fff;border-bottom:1px solid #dadce0;position:relative;z-index:20;box-shadow:0 1px 3px #0000000d}
+.brand{color:#202124;font-family:'DM Sans',sans-serif;font-size:18px}.brand-mark{background:#e8f0fe;border:0;color:#1a73e8;border-radius:50%}.brand-accent{color:#1a73e8}.brand small{color:#5f6368}
+.nav-links a{color:#5f6368}.nav-links a.active{color:#1a73e8;border-color:#1a73e8}.connection{color:#5f6368}.account-button,.secondary-button{background:#fff;color:#3c4043;border-color:#dadce0}.account-button:hover,.secondary-button:hover{background:#f8f9fa;border-color:#bdc1c6}
+.hero{display:none}
+.workspace#navigate{padding:16px 16px 28px}
+.workspace#navigate>.section-heading{position:absolute;left:32px;top:82px;z-index:6;margin:0;display:block;max-width:0;overflow:visible}
+.workspace#navigate>.section-heading>div{display:none}.workspace#navigate>.section-heading>.secure-label{display:none}
+.planner-grid{display:block;position:relative;min-height:calc(100vh - 100px)}
+.map-panel{position:relative;width:100%;height:calc(100vh - 100px);min-height:560px;padding:0;border-radius:14px;overflow:hidden;background:#e8eaed;border:1px solid #dadce0;box-shadow:0 2px 8px #3c40431a}
+.map-topline{position:absolute;top:14px;right:14px;z-index:4;margin:0;padding:8px 12px;background:#fff;border:1px solid #dadce0;border-radius:9px;box-shadow:0 2px 6px #0002}
+.map-topline .eyebrow{display:none}.map-topline h3{font:500 13px 'DM Sans',sans-serif;color:#3c4043}.map-chip{color:#188038;background:#fff;border-color:#dadce0}
+.map-placeholder{position:absolute;inset:0;height:auto;border:0;border-radius:0;background:#e8eaed}
+.real-map{background:#e8eaed}.leaflet-container{background:#e8eaed;font-family:'DM Sans',sans-serif}.leaflet-control-zoom a{color:#3c4043!important}
+.map-floating-label{position:absolute;z-index:500;left:50%;top:14px;transform:translateX(-50%);display:flex;align-items:center;gap:7px;padding:9px 13px;background:#fff;border-radius:22px;color:#3c4043;font-size:12px;box-shadow:0 2px 7px #0002;pointer-events:none}
+.map-floating-label svg{color:#1a73e8}
+.map-locate-button{position:absolute;right:14px;bottom:58px;z-index:600;width:44px;height:44px;border:0;border-radius:50%;background:#fff;color:#1a73e8;box-shadow:0 2px 7px #0003;display:grid;place-items:center}
+.map-locate-button:hover{background:#f8f9fa}
+.route-panel{position:absolute;z-index:5;top:14px;left:14px;width:min(370px,calc(100% - 28px));padding:18px;background:#fff;border:0;border-radius:12px;box-shadow:0 2px 10px #20212433;color:#202124}
+.panel{background:#fff;border-color:#dadce0;box-shadow:0 1px 4px #20212412}
+.panel-heading{margin-bottom:17px}.panel-icon{background:#e8f0fe;border:0;color:#1a73e8}.panel-heading h3,.safety-card h3,.data-panel h3{color:#202124}.panel-heading p,.section-heading p{color:#5f6368}
+.field-label,.vehicle-label{color:#5f6368}.location-input{background:#fff;border-color:#dadce0;border-radius:8px}.location-input:focus-within{border-color:#1a73e8;box-shadow:0 0 0 1px #1a73e8}.location-input input{color:#202124}.location-input input::placeholder{color:#80868b}.field-pin.start,.field-pin.end{color:#1a73e8}.field-action{color:#1a73e8}.field-connector{border-color:#bdc1c6}
+.vehicle-option{background:#fff;color:#5f6368;border-color:#dadce0;border-radius:8px}.vehicle-option.selected{background:#e8f0fe;border-color:#1a73e8;color:#1a73e8}
+.primary-button{background:#1a73e8;border:0;border-radius:24px;box-shadow:none;padding:13px 18px}.primary-button:hover{background:#1765cc;filter:none}
+.fine-print{color:#5f6368}.inline-message{color:#7a4f01;background:#fef7e0;border-color:#f9e3a2}
+.suggestions{background:#fff;border-color:#dadce0;box-shadow:0 4px 12px #0002}.suggestions button{color:#202124;border-color:#eee}.suggestions button:hover{background:#f8f9fa}.suggestions small{color:#5f6368}
+.selected-location{color:#1a73e8}.map-footer{position:absolute;bottom:0;left:0;right:0;z-index:4;padding:10px 14px;background:#fff;color:#5f6368;border-top:1px solid #dadce0}.map-footer .status-dot{background:#188038;box-shadow:none}
+.route-summary,.turn-list{background:#fff;color:#202124;border-color:#dadce0}.route-summary>div small,.turn-step small{color:#5f6368}.route-summary>div strong{color:#202124}.turn-list{max-height:190px;overflow:auto}.turn-step{border-color:#eee}.turn-step>span{background:#e8f0fe;color:#1a73e8}
+.workspace#account,.safety-section,.system-section{padding-left:28px;padding-right:28px}.section-heading h2{color:#202124}.eyebrow{color:#1a73e8}.secure-label{color:#5f6368;border-color:#dadce0}
+.safety-grid,.account-grid{gap:16px}.safety-card,.data-panel,.status-panel{background:#fff;border:1px solid #dadce0;box-shadow:0 1px 3px #0000000d}.safety-card p,.status-row small,.data-row small,.empty-state{color:#5f6368}.safety-card-icon,.status-symbol{background:#e8f0fe;border:0;color:#1a73e8}.feature-state{color:#5f6368}.status-row{border-color:#eee}.status-row strong,.data-row strong{color:#202124}.status-value{color:#b06000}.status-value.good{color:#188038}
+.compact-form input,.auth-form input{background:#fff;color:#202124;border-color:#dadce0}.data-row{border-color:#eee}.place-link strong{color:#202124}.subtle-icon{background:#fff;color:#5f6368;border-color:#dadce0}
+footer{margin:0 28px;border-color:#dadce0}footer p,footer>span{color:#5f6368}
+.sos-confirm{background:#fce8e6;border-color:#f5c6c2}.sos-confirm>p{color:#5f6368}.sos-confirm textarea{background:#fff;color:#202124;border-color:#dadce0}.danger-button{background:#d93025;border-color:#d93025}
+@media(max-width:760px){
+ .topbar{padding:0 14px}.workspace#navigate{padding:10px 10px 20px}.planner-grid{min-height:calc(100vh - 84px)}
+ .map-panel{height:calc(100vh - 84px);min-height:520px;border-radius:10px}
+ .route-panel{top:10px;left:10px;width:min(340px,calc(100% - 20px));padding:14px;max-height:57vh;overflow-y:auto}
+ .panel-heading{margin-bottom:12px}.vehicle-label{margin-top:14px}.vehicle-option{padding:9px 3px}
+ .map-topline{top:auto;bottom:53px;right:10px}.map-floating-label{top:auto;bottom:12px;left:12px;transform:none}
+ .map-locate-button{right:10px;bottom:105px}
+ .workspace#account,.safety-section,.system-section{padding-left:12px;padding-right:12px}
+ footer{margin:0 12px}
+}
