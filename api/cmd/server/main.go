@@ -39,6 +39,8 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", s.health)
 	mux.HandleFunc("GET /api/v1/status", s.status)
+	mux.HandleFunc("GET /api/v1/geocode", s.geocode)
+	mux.HandleFunc("POST /api/v1/routes", s.directions)
 	mux.HandleFunc("POST /api/v1/auth/register", s.register)
 	mux.HandleFunc("POST /api/v1/auth/login", s.login)
 	mux.Handle("GET /api/v1/auth/me", s.authenticate(http.HandlerFunc(s.me)))
