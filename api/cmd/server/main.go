@@ -39,6 +39,13 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", s.health)
 	mux.HandleFunc("GET /api/v1/status", s.status)
+	mux.HandleFunc("POST /api/v1/auth/register", s.register)
+	mux.HandleFunc("POST /api/v1/auth/login", s.login)
+	mux.Handle("GET /api/v1/auth/me", s.authenticate(http.HandlerFunc(s.me)))
+	mux.Handle("POST /api/v1/auth/logout", s.authenticate(http.HandlerFunc(s.logout)))
+	mux.Handle("GET /api/v1/contacts", s.authenticate(http.HandlerFunc(s.listContacts)))
+	mux.Handle("POST /api/v1/contacts", s.authenticate(http.HandlerFunc(s.createContact)))
+	mux.Handle("DELETE /api/v1/contacts/{id}", s.authenticate(http.HandlerFunc(s.deleteContact)))
 
 	handler := securityHeaders(cors(mux))
 	srv := &http.Server{
