@@ -100,3 +100,97 @@ footer{border-top:1px solid rgba(145,167,230,.14);margin-top:40px}
   .workspace .section-heading h2{font-size:26px}
   .map-placeholder,.real-map{height:340px}
 }
+
+
+/* SafeRoute dashboard visual refresh — UI only; retain all sections and handlers */
+.hero{display:flex!important;min-height:0;padding:30px 4% 22px;gap:28px;align-items:center;overflow:visible}
+.hero-copy{max-width:690px}
+.hero .eyebrow{letter-spacing:1.5px}
+.hero h1{font-size:clamp(32px,3.2vw,43px);line-height:1.08;letter-spacing:-1.6px;margin:12px 0 10px}
+.hero-copy>p{font-size:12px;line-height:1.6;max-width:610px}
+.hero-stats{margin-top:17px;gap:20px}
+.hero-status{width:300px;max-width:38%;padding:15px 17px;border-radius:15px}
+.hero-status-top{padding-bottom:10px}
+.hero-status-row{padding:10px 0;gap:9px}
+.hero-status-row strong{font-size:11px}
+.hero-status-row small{font-size:10px}
+.hero-status-note{font-size:9px}
+.workspace{padding-top:15px!important}
+.workspace .section-heading{margin-bottom:14px}
+.workspace .section-heading h2{font-size:27px;margin-top:5px}
+.workspace .section-heading p{font-size:11px}
+.planner-grid{grid-template-columns:minmax(290px,.72fr) minmax(0,1.28fr);gap:16px;align-items:stretch}
+.route-panel{padding:20px}
+.map-panel{padding:18px;min-width:0}
+.panel{border-color:rgba(139,154,210,.18);box-shadow:0 16px 45px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.015)}
+.map-placeholder,.real-map{height:clamp(350px,36vw,450px);border-radius:13px;overflow:hidden}
+.map-placeholder:not(.real-map){position:relative;background-color:#0b2024;background-image:linear-gradient(25deg,transparent 47%,rgba(75,113,111,.28) 48%,rgba(75,113,111,.28) 49%,transparent 50%),linear-gradient(115deg,transparent 46%,rgba(75,113,111,.25) 47%,rgba(75,113,111,.25) 48%,transparent 49%),linear-gradient(90deg,transparent 48%,rgba(103,131,127,.14) 49%,rgba(103,131,127,.14) 50%,transparent 51%),linear-gradient(0deg,transparent 48%,rgba(103,131,127,.14) 49%,rgba(103,131,127,.14) 50%,transparent 51%);background-size:170px 130px,220px 170px,76px 76px,76px 76px}
+.map-placeholder:not(.real-map)::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 70% 35%,rgba(72,126,110,.12),transparent 50%),linear-gradient(135deg,rgba(5,11,22,.15),rgba(5,11,22,.68));pointer-events:none}
+.map-center{position:relative;z-index:1;max-width:310px;padding:22px;border:1px solid rgba(142,125,255,.26);border-radius:16px;background:rgba(8,13,27,.86);backdrop-filter:blur(12px);box-shadow:0 12px 50px rgba(0,0,0,.25)}
+.map-center strong{font-size:14px}
+.map-center>span:last-child{font-size:11px;line-height:1.6}
+.map-center-icon{margin-bottom:10px}
+.map-topline{margin-bottom:14px}
+.map-chip{font-size:9px}
+.location-input{min-height:46px}
+.vehicle-options{gap:6px}
+.vehicle-option{padding:10px 2px;min-height:67px}
+.primary-button{min-height:47px;box-shadow:0 8px 25px rgba(119,94,255,.19)}
+.safety-section,.system-section{padding-top:28px}
+.safety-grid{gap:14px}
+.safety-card{padding:21px}
+.safety-card h3{font-size:15px}
+.safety-card>p{font-size:11px;line-height:1.65}
+.danger-button{box-shadow:0 7px 22px rgba(255,75,100,.12)}
+.status-panel{padding:4px 20px}
+.status-row{padding:17px 0}
+footer{padding-top:22px}
+@media(max-width:1000px){
+ .app-shell{padding-left:24px;padding-right:24px}
+ .topbar{gap:14px}
+ .nav-links{gap:16px}
+ .hero{padding:26px 1% 18px}
+ .hero-status{width:280px}
+ .planner-grid{grid-template-columns:minmax(270px,.78fr) minmax(0,1.22fr)}
+ .map-placeholder,.real-map{height:390px}
+}
+@media(max-width:760px){
+ .app-shell{padding:0 14px}
+ .topbar{height:70px}
+ .brand{font-size:17px}
+ .brand-mark{width:36px;height:36px}
+ .nav-links{top:62px;left:0;right:0;z-index:20;padding:14px 16px;border:1px solid var(--border);border-radius:13px;background:#0d1221}
+ .topbar-right{gap:8px}
+ .connection{display:none}
+ .hero{display:flex!important;flex-direction:column;align-items:stretch;gap:14px;padding:24px 2px 10px}
+ .hero-copy{max-width:none}
+ .hero h1{font-size:36px;letter-spacing:-1.2px;margin:10px 0}
+ .hero-copy>p{font-size:12px;line-height:1.55}
+ .hero-stats{gap:12px;flex-wrap:wrap;margin-top:14px}
+ .hero-stats small{font-size:9px}
+ .hero-status{width:100%;max-width:none;padding:12px 15px}
+ .hero-status-row{padding:8px 0}
+ .workspace{padding-top:14px!important}
+ .workspace .section-heading{align-items:flex-start;gap:10px;margin-bottom:13px}
+ .workspace .section-heading h2{font-size:25px;line-height:1.2}
+ .workspace .section-heading p{font-size:11px;line-height:1.5}
+ .secure-label{flex-shrink:0;padding:8px;font-size:8px}
+ .planner-grid{grid-template-columns:minmax(0,1fr);gap:13px}
+ .route-panel,.map-panel{padding:16px;border-radius:16px}
+ .panel-heading{margin-bottom:18px}
+ .location-input{min-height:48px}
+ .vehicle-option{min-height:64px;font-size:9px}
+ .map-topline{align-items:flex-start;gap:8px}
+ .map-topline h3{font-size:15px}
+ .map-chip{max-width:130px;white-space:normal;line-height:1.4}
+ .map-placeholder,.real-map{height:clamp(300px,88vw,380px)}
+ .map-placeholder:not(.real-map){background-size:130px 100px,180px 140px,62px 62px,62px 62px}
+ .route-summary{flex-wrap:wrap}
+ .safety-grid,.account-grid{grid-template-columns:minmax(0,1fr)}
+ .safety-section,.system-section{padding:22px 0 30px}
+ .section-heading{align-items:flex-start;gap:12px}
+ .section-heading h2{font-size:24px}
+ .status-row{gap:10px;flex-wrap:wrap}
+ .status-value{margin-left:46px}
+ footer{gap:15px}
+}
