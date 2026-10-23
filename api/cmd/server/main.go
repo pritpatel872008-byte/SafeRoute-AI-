@@ -2,16 +2,23 @@ package main
 
 import (
 	"context"
+	"embed"
+	"fmt"
+	"io/fs"
 	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
 	"os"
 	"strings"
+	"sort"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+//go:embed migrations/*.sql
+var migrationFiles embed.FS
 
 type server struct {
 	db *pgxpool.Pool
@@ -31,6 +38,9 @@ func main() {
 		}
 		if err = pool.Ping(ctx); err != nil {
 			log.Fatalf("database connection failed: %v", err)
+		}
+		if err = runMigrations(pool); err != nil {
+			log.Fatalf("database migrations failed: %v", err)
 		}
 		defer pool.Close()
 	}
@@ -129,4 +139,32 @@ func env(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+func runMigrations(pool *pgxpool.Pool) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	if _, err := pool.Exec(ctx, `CREATE TABLE IF NOT EXISTS schema_migrations (name TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT now())`); err != nil {
+		return fmt.Errorf("create migration ledger: %w", err)
+	}
+	entries, err := fs.ReadDir(migrationFiles, "migrations")
+	if err != nil { return fmt.Errorf("read embedded migrations: %w", err) }
+	sort.Slice(entries, func(i,j int) bool { return entries[i].Name() < entries[j].Name() })
+	for _, entry := range entries {
+		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".sql") { continue }
+		var applied bool
+		if err := pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM schema_migrations WHERE name=$1)`, entry.Name()).Scan(&applied); err != nil {
+			return fmt.Errorf("check migration %s: %w", entry.Name(), err)
+		}
+		if applied { continue }
+		sqlBytes, err := migrationFiles.ReadFile("migrations/" + entry.Name())
+		if err != nil { return fmt.Errorf("read migration %s: %w", entry.Name(), err) }
+		tx, err := pool.Begin(ctx)
+		if err != nil { return fmt.Errorf("begin migration %s: %w", entry.Name(), err) }
+		if _, err = tx.Exec(ctx, string(sqlBytes)); err != nil { _ = tx.Rollback(ctx); return fmt.Errorf("execute migration %s: %w", entry.Name(), err) }
+		if _, err = tx.Exec(ctx, `INSERT INTO schema_migrations(name) VALUES($1)`, entry.Name()); err != nil { _ = tx.Rollback(ctx); return fmt.Errorf("record migration %s: %w", entry.Name(), err) }
+		if err = tx.Commit(ctx); err != nil { return fmt.Errorf("commit migration %s: %w", entry.Name(), err) }
+		log.Printf("applied database migration %s", entry.Name())
+	}
+	return nil
 }
