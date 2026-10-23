@@ -81,3 +81,22 @@ footer{border-top:1px solid rgba(145,167,230,.14);margin-top:40px}
 .topbar{position:relative}
 @media(max-width:900px){.hero-status{width:34%;padding:15px}.planner-grid{grid-template-columns:minmax(285px,.82fr) minmax(0,1.18fr)}.map-placeholder,.real-map{height:360px}}
 @media(max-width:760px){.hero{min-height:0;padding:35px 0 24px;display:flex;flex-direction:column;align-items:stretch;gap:20px}.hero h1{font-size:42px;letter-spacing:-1.5px}.hero-status{width:100%;max-width:none}.planner-grid{grid-template-columns:minmax(0,1fr);gap:14px}.route-panel,.map-panel{padding:17px}.map-placeholder,.real-map{height:clamp(300px,95vw,430px)}.workspace{padding-top:24px}.section-heading{align-items:flex-start;gap:12px}.section-heading h2{font-size:25px}.secure-label{font-size:9px}.hero-stats{gap:14px;flex-wrap:wrap}}
+
+
+/* Route-first dashboard: remove oversized marketing hero from the app workspace */
+.hero{display:none!important}
+.workspace{padding-top:22px!important}
+.workspace .section-heading{margin-bottom:18px}
+.workspace .section-heading h2{font-size:clamp(24px,2.3vw,30px)}
+.planner-grid{grid-template-columns:minmax(300px,.72fr) minmax(0,1.28fr);align-items:stretch}
+.route-panel,.map-panel{min-width:0}
+@media(max-width:760px){
+  .app-shell{padding-left:16px;padding-right:16px}
+  .workspace{padding-top:18px!important}
+  .planner-grid{grid-template-columns:minmax(0,1fr);gap:14px}
+  .route-panel{order:0}
+  .map-panel{order:1}
+  .workspace .section-heading{margin-bottom:14px}
+  .workspace .section-heading h2{font-size:26px}
+  .map-placeholder,.real-map{height:340px}
+}
